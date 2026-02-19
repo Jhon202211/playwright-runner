@@ -38,7 +38,10 @@ app.post("/run", (req, res) => {
     return res.status(400).json({ success: false, error: "Archivo de test no encontrado" });
   }
 
-  exec(`npx playwright test "${safeName}"`, { cwd: __dirname, maxBuffer: 10 * 1024 * 1024 }, (err, stdout, stderr) => {
+  // En Railway no hay pantalla: siempre headless y solo Chromium (incluido en la imagen)
+  const env = { ...process.env, CI: "1", PLAYWRIGHT_HEADLESS: "1" };
+  const cmd = `npx playwright test "${safeName}" --project=chromium`;
+  exec(cmd, { cwd: __dirname, maxBuffer: 10 * 1024 * 1024, env }, (err, stdout, stderr) => {
     res.json({
       success: !err,
       stdout: stdout || "",

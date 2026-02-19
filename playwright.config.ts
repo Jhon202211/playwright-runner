@@ -35,19 +35,11 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
 
-  /* Configure projects for major browsers */
+  /* En Railway solo Chromium (incluido en la imagen Docker); sin display = headless */
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'], viewport: { width: 1920, height: 1080 } },
-    },
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'], viewport: { width: 1920, height: 1080 } },
-    },
-    {
-      name: 'Microsoft Edge',
-      use: { ...devices['Desktop Edge'], channel: 'msedge', viewport: { width: 1920, height: 1080 } },
     },
   ],
 

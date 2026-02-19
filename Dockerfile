@@ -1,5 +1,5 @@
-# Imagen oficial Playwright con dependencias Linux (evita errores Chromium en Railway)
-FROM mcr.microsoft.com/playwright:v1.49.0-jammy
+# Imagen oficial Playwright (versión 1.50 = Chromium incluido)
+FROM mcr.microsoft.com/playwright:v1.50.0-jammy
 
 WORKDIR /app
 
