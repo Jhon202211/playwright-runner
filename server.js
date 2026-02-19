@@ -38,14 +38,17 @@ app.post("/run", (req, res) => {
     return res.status(400).json({ success: false, error: "Archivo de test no encontrado" });
   }
 
-  // En Railway no hay pantalla: siempre headless y solo Chromium (incluido en la imagen)
+  // Railway: sin pantalla → siempre headless, solo Chromium. Comando lo arma el backend (no --headed, no cross-env).
   const env = { ...process.env, CI: "1", PLAYWRIGHT_HEADLESS: "1" };
-  const cmd = `npx playwright test "${safeName}" --project=chromium`;
+  const cmd = `npx playwright test "${safeName}" --project=chromium --reporter=line`;
   exec(cmd, { cwd: __dirname, maxBuffer: 10 * 1024 * 1024, env }, (err, stdout, stderr) => {
+    const out = stdout || "";
+    const errOut = stderr || "";
     res.json({
       success: !err,
-      stdout: stdout || "",
-      stderr: stderr || "",
+      stdout: out,
+      stderr: errOut,
+      error: err ? (errOut || out || err.message).slice(0, 500) : undefined,
     });
   });
 });

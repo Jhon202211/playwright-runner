@@ -29,9 +29,12 @@ export default defineConfig({
     baseURL: process.env.BASE_URL || 'https://alex.queo.dev',
 
     /* Navegador con viewport fijo tipo “maximizado” para todos los tests */
+    headless: true,
+    launchOptions: {
+      slowMo: process.env.SLOW_MO ? parseInt(process.env.SLOW_MO, 10) : 0,
+    },
     viewport: { width: 1920, height: 1080 },
 
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
   },
 
