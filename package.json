@@ -1,19 +1,21 @@
 {
   "name": "playwright-runner",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Backend runner para ejecutar tests Playwright desde el panel Cloudflare",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
     "postinstall": "npx playwright install --with-deps"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "cors": "^2.8.6",
-    "express": "^5.2.1",
-    "playwright": "^1.58.2"
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "playwright": "^1.50.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.50.0"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }
