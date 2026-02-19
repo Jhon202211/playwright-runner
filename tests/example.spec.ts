@@ -1,9 +1,10 @@
 import { test, expect } from '@playwright/test';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import { fileURLToPath } from 'url';
 
-// Cargar variables de entorno
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const BASE_URL = process.env.BASE_URL || 'https://alex.queo.dev';
 

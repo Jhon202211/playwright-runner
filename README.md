@@ -60,4 +60,30 @@ Así las peticiones serán a `https://tu-app.up.railway.app/tests` y `https://tu
 
 ## Añadir los tests del panel
 
-Puedes copiar los `.spec.ts` de tu proyecto principal (playwright) a `playwright-runner/tests/`. Si usan `dotenv` o `BASE_URL`, define variables de entorno en Railway (Settings → Variables) y ajusta `playwright.config.ts` o los tests para leerlas.
+Puedes copiar los `.spec.ts` de tu proyecto principal (playwright) a `playwright-runner/tests/`.
+
+### Qué debe tener el runner (resumen)
+
+| En el runner | Descripción |
+|--------------|-------------|
+| `playwright.config.ts` | Con **ESM**: usar `fileURLToPath(import.meta.url)` para `__dirname`, no `__dirname` directo. |
+| `tests/*.spec.ts` | Cada spec que use `dotenv` con `__dirname` debe definir `__dirname` en ESM (ver abajo). |
+| `tests/helpers/*.ts` | Si algún spec hace `import ... from './helpers/...'`, copia esa carpeta. |
+| `fixtures/` | Solo si algún test lee archivos de ahí (ej. Excel); copia los que use. |
+| Variables en Railway | `BASE_URL` (y las que lean tus tests). Opcional: `.env` en la raíz del runner. |
+
+### ESM: evitar `__dirname is not defined`
+
+En Node con módulos ES no existe `__dirname`. En **playwright.config.ts** y en **cada .spec.ts** que use `path.resolve(__dirname, ...)` pon al inicio:
+
+```ts
+import { fileURLToPath } from 'url';
+import * as path from 'path';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// luego: path.join(__dirname, '../.env') o path.resolve(__dirname, '...')
+```
+
+### Tests que usan helpers
+
+Ej.: `import_users_from_excel.spec.ts` importa `./helpers/generateExcelFile`. Si lo copias al runner, copia también `tests/helpers/generateExcelFile.ts` (y sus dependencias, ej. `xlsx` en package.json).
