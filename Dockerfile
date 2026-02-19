@@ -1,5 +1,5 @@
-# Imagen oficial Playwright (versión 1.50 = Chromium incluido)
-FROM mcr.microsoft.com/playwright:v1.50.0-jammy
+# Imagen debe coincidir con la versión de @playwright/test en package.json
+FROM mcr.microsoft.com/playwright:v1.58.2-jammy
 
 WORKDIR /app
 
