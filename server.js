@@ -48,6 +48,7 @@ app.post("/run", (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log("Servidor listo en puerto", PORT);
+const HOST = process.env.HOST || "0.0.0.0";
+app.listen(PORT, HOST, () => {
+  console.log("Servidor listo en", HOST + ":" + PORT);
 });
