@@ -9,13 +9,18 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const testsDir = path.join(__dirname, "tests");
 const reportDir = path.join(__dirname, "playwright-report");
 
+// Asegurar que la carpeta del reporte exista (tras un deploy nuevo está vacía hasta que se ejecute un test)
+if (!fs.existsSync(reportDir)) {
+  fs.mkdirSync(reportDir, { recursive: true });
+}
+
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
 // Servir el reporte HTML de Playwright (para que el panel pueda abrir la URL en producción)
-app.use("/report", express.static(reportDir));
+app.use("/report", express.static(reportDir, { index: "index.html" }));
 
 app.get("/", (req, res) => {
   res.send("Runner activo");
@@ -40,6 +45,7 @@ app.get("/api/open-report", (req, res) => {
   }
   const baseUrl = getBaseUrl(req);
   const reportUrl = `${baseUrl}/report`;
+  res.setHeader("Cache-Control", "no-store");
   res.json({
     success: true,
     message: "Reporte disponible. Abre el enlace en tu navegador.",
@@ -68,9 +74,9 @@ app.post("/run", (req, res) => {
     return res.status(400).json({ success: false, error: "Archivo de test no encontrado" });
   }
 
-  // Railway: sin pantalla → siempre headless, solo Chromium. Comando lo arma el backend (no --headed, no cross-env).
+  // Railway: sin pantalla → siempre headless, solo Chromium. Sin --reporter=line para que se genere el reporte HTML (config).
   const env = { ...process.env, CI: "1", PLAYWRIGHT_HEADLESS: "1" };
-  const cmd = `npx playwright test "${safeName}" --project=chromium --reporter=line`;
+  const cmd = `npx playwright test "${safeName}" --project=chromium`;
   exec(cmd, { cwd: __dirname, maxBuffer: 10 * 1024 * 1024, env }, (err, stdout, stderr) => {
     const out = stdout || "";
     const errOut = stderr || "";
