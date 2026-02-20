@@ -7,14 +7,44 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const testsDir = path.join(__dirname, "tests");
+const reportDir = path.join(__dirname, "playwright-report");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+// Servir el reporte HTML de Playwright (para que el panel pueda abrir la URL en producción)
+app.use("/report", express.static(reportDir));
+
 app.get("/", (req, res) => {
   res.send("Runner activo");
+});
+
+/** URL base pública del servidor (para enlaces al reporte). Railway/proxy suelen enviar X-Forwarded-* */
+function getBaseUrl(req) {
+  const proto = req.get("x-forwarded-proto") || req.protocol || "https";
+  const host = req.get("x-forwarded-host") || req.get("host") || "";
+  return `${proto}://${host}`.replace(/\/$/, "");
+}
+
+/** GET /api/open-report: devuelve la URL pública del reporte para que el panel la abra en el navegador */
+app.get("/api/open-report", (req, res) => {
+  const indexPath = path.join(reportDir, "index.html");
+  if (!fs.existsSync(indexPath)) {
+    return res.status(404).json({
+      success: false,
+      error: "No se encontró ningún reporte. Ejecuta algunos tests primero para generar un reporte.",
+      suggestion: "Ejecuta al menos un test antes de intentar ver el reporte",
+    });
+  }
+  const baseUrl = getBaseUrl(req);
+  const reportUrl = `${baseUrl}/report`;
+  res.json({
+    success: true,
+    message: "Reporte disponible. Abre el enlace en tu navegador.",
+    url: reportUrl,
+  });
 });
 
 app.get("/tests", (req, res) => {

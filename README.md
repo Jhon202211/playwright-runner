@@ -22,6 +22,8 @@ playwright-runner/
 | GET    | `/`    | Health: responde "Runner activo" |
 | GET    | `/tests` | Lista archivos `*.spec.ts` en `tests/` |
 | POST   | `/run` | Ejecuta un test. Body: `{ "test": "example.spec.ts" }` |
+| GET    | `/api/open-report` | Devuelve `{ success, url }` con la URL pública del reporte HTML (ej. `https://tu-app.up.railway.app/report`). El panel abre esa URL en el navegador. |
+| GET    | `/report` | Sirve el reporte HTML estático (carpeta `playwright-report/`). Disponible tras ejecutar al menos un test. |
 
 ## Despliegue en Railway
 
@@ -49,6 +51,8 @@ Evita fallos de Chromium por dependencias Linux:
 - `https://tu-app.up.railway.app/` → "Runner activo"
 - `https://tu-app.up.railway.app/tests` → `["example.spec.ts", ...]`
 - `POST https://tu-app.up.railway.app/run` con body `{ "test": "example.spec.ts" }`
+- `GET https://tu-app.up.railway.app/api/open-report` → `{ "success": true, "url": "https://tu-app.up.railway.app/report" }` (o error si no hay reporte; ejecuta un test antes)
+- `https://tu-app.up.railway.app/report` → reporte HTML (si existe)
 
 ## Conectar con el panel (Cloudflare)
 
